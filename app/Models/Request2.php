@@ -21,7 +21,7 @@ class Request2 extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function statue() 
+    public function car() 
     {
         return $this->belongsTo(Car::class, 'car_id'); 
     }      

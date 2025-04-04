@@ -14,14 +14,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
 
-        Route::get('/admin', [ReportController::class, 'adminIndex'])->name('admin.index');
+    Route::get('/admin', [ReportController::class, 'adminIndex'])->name('admin.index');
 
     Route::post('/reports/{id}', [ReportController::class, 'updateStatus']);
     Route::put('/reports/{id}', [ReportController::class, 'update'])->name('reports.update');
-
+    Route::put('/reports/{id}/repair-date', [ReportController::class, 'updateRepairDate'])->name('reports.updateRepairDate');
     Route::get('/request', [ReportController::class, 'index'])->name('request.index'); 
-    Route::get('/request/create', [ReportController::class, 'create'])->name('request.create'); 
+    Route::get('/request/create/{car_id}', [ReportController::class, 'create'])->name('request.create');
     Route::post('/request', [ReportController::class, 'store'])->name('request.store'); 
+
+    Route::get('/car', [ReportController::class, 'Carindex'])->name('car.index'); 
+    Route::get('/car/create', [ReportController::class, 'Carcreate'])->name('car.create'); 
+    Route::post('/car', [ReportController::class, 'Carstore'])->name('car.store'); 
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
