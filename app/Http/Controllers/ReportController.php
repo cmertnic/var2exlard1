@@ -2,41 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Statue;
-use App\Models\Report;
+use App\Models\Car;
+use App\Models\Request2;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class ReportController extends Controller
-{   //private function isAdminByEmail($email)
-    //{
-    //    return Auth::check() && Auth::user()->email === $email;
-    //}
+{
     
-  //  private function isAdmin()
-  //  {
-  //      return Auth::check() && Auth::user()->role === 'admin';
-  //  }
+  private function isAdmin()
+    {
+        return Auth::check() && Auth::user()->role === 'admin';
+    }
     public function adminIndex()
     {
-    //    if (!$this->isAdmin()) {
-    //        abort(403, 'Недостаточно полномочий для доступа к этой странице.');
-    //    }
-    //if (!$this->isAdminByEmail('admin@example.com')) {
-    //   abort(403, 'Недостаточно полномочий для доступа к этой странице.');
-    //}
-        $reports = Report::paginate(10);
-        $statues = Statue::all();
+        if (!$this->isAdmin()) {
+            abort(403, 'Недостаточно полномочий для доступа к этой странице.');
+        }
 
-        return view('admin', compact('reports', 'statues'));
+        $request2s = Request2::paginate(10);
+        $cars = Car::all();
+
+        return view('admin', compact('request2s', 'cars'));
     }
 
     public function updateStatus(Request $request, $id)
     {
-        $report = Report::findOrFail($id);
-        $report->statues_id = $request->input('status_id');
+        $report = Request2::findOrFail($id);
+        $report->cars_id = $request->input('status_id');
         $report->save();
 
         return response()->json(['success' => true]);
@@ -44,11 +39,11 @@ class ReportController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'statues_id' => 'required|exists:statues,id',
+            'cars_id' => 'required|exists:cars,id',
         ]);
 
-        $report = Report::findOrFail($id);
-        $report->statues_id = $request->statues_id;
+        $report = Request2::findOrFail($id);
+        $report->cars_id = $request->cars_id;
         $report->save();
 
         return redirect()->route('admin.index')->with('success', 'Статус обновлён успешно!');
@@ -58,31 +53,31 @@ class ReportController extends Controller
 
     public function index()
     {
-        $reports = Report::where('user_id', Auth::id())->paginate(10);
-        return view('welcome', ['reports' => $reports]);
+        $request2s = Request2::where('user_id', Auth::id())->paginate(10);
+        return view('welcome', ['request2s' => $request2s]);
     }
 
     public function create()
     {
-        // $services = Service::all();
-        $statues = Statue::all();
 
-        return view('request', compact('statues')); //('services', 'statues')); 
+        $cars = Car::all();
+
+        return view('request', compact('cars')); 
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            '' => 'required|string|max:255',
-            //   'service_id' => 'required|exists:services,id',
+            'problem' => 'required|string|max:255',
+            'car_id' => 'required|exists:cars,id', 
         ]);
 
 
 
-        Report::create([
-            '' => $data[''],
-            //'service_id' => $data['service_id'],
-            'statues_id' => 1,
+        Request2::create([
+            'problem' => $data['problem'],
+            'repair_date' =>'2000-01-01',
+            'car_id' => $data['car_id'],
             'user_id' => Auth::id(),
         ]);
 
